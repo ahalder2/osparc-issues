@@ -3,3 +3,9 @@ Pyyaml
 pytablewriter
 jinja2
 yarl
+click
+attrs
+
+
+# tooling
+pylint

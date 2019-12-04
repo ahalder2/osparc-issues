@@ -1,107 +1,52 @@
 import json
-import sys
-from pprint import pprint
-from typing import Dict, List
-
-import requests
-from pytablewriter import MarkdownTableWriter
 
 import attr
+import click
+from pathlib import Path
 from yarl import URL
 
+from data_query import *
+from doc_render import *
 
-attr.s(auto_attribs=True)
+
+@attr.s(auto_attribs=True)
+class Meeting:
+  date: str
+  time: str
+  agenda_table: str
+  nih_deliverables_table: str
+
+
+@attr.s(auto_attribs=True)
 class Member:
   name: str
   short: str
 
-attr.s(auto_attribs=True)
-class Meeting:
-  date:
-  time:
-  agenda_table: str
-  nih_deliverables_table: str
-
-attr.s(auto_attribs=True)
+@attr.s(auto_attribs=True)
 class Sprint:
   name: str
-  zehnhub_url: URL
+  zehnhub_url: URL = attr.ib(init=False)
   scrum_master: Member
 
 
 
-#def create_review_md():
-#  with open("review.md", 'wt'):
+team = [ Member(name, short) for name, short in zip(MEMBERS[::2], MEMBERS[1::2]) ]
 
 
+@click.group()
+@click.option('--token', default=None, help='github api token')
+def main(token):
 
-#---------------
-
-MEMBERS = "odeimaiz OM ignapas IP mguidon MaG pcrespov PC KZzizzle KZ sanderegg SAN".split()
-members = [ Member(name, short) for name, short zip(MEMBERS[::2], MEMBERS[1::2]) ]
-
-
-## https://developer.github.com/v3/projects/#list-organization-projects
-ORIGIN = "https://api.github.com"
-OWNER = "ITISFoundation"
-
-# https://github.com/orgs/ITISFoundation/projects/3
-PROJECT_ID = "1234240"
-
-aouth_token = sys.argv[1]
-headers={
-  'Authorization': f'token {aouth_token}',
-  'Accept': 'application/vnd.github.inertia-preview+json'
-}
-
-def get_issue(repo_name, issue_number) -> Dict:
-  # https://developer.github.com/v3/issues/#get-a-single-issue
-  url = f"{ORIGIN}/repos/{OWNER}/{repo_name}/issues/{issue_number}"
-  res = requests.get(url, headers=headers)
-  issue = res.json()
-  return issue
+  # dumps
+  if token:
+    dump_headers(token)
+    click.echo('Token saved')
 
 
-def get_issues_in_column(column_id) -> List[Dict]:
-  ## https://developer.github.com/v3/projects/cards/#list-project-cards
-  issues = []
-  url = f"{ORIGIN}/projects/columns/{column_id}/cards"
+@main.command()
+def pull_and_dump():
+  click.echo('pull_and_dump')
 
-  res = requests.get(url, headers=headers)
-  cards = res.json()
-  for card in cards:
-    res = requests.get(card["content_url"], headers=headers)
-    issue = res.json()
-    issues.append(issue)
-
-  return issues
-
-
-def get_project_columns():
-  # https://developer.github.com/v3/projects/columns/#list-project-columns
-  url = f"{ORIGIN}/projects/{PROJECT_ID}/columns"
-  res = requests.get(url, headers=headers)
-  return res.json()
-
-
-def get_project_table():
-  # urls
-  projects_url = f"{ORIGIN}/orgs/{OWNER}/projects"
-
-  columns_url = f"{ORIGIN}/projects/{PROJECT_ID}/columns"
-
-  table = {}
-  res = requests.get(columns_url, headers=headers)
-  for col in res.json():
-    table[col['name']] = []
-    res = requests.get(col['cards_url'], headers=headers)
-    for card in res.json():
-      table[col['name']].append(card)
-
-  return table
-
-
-def pull_info():
   columns = get_project_columns()
   with open("columns.json", 'wt') as fh:
     json.dump(columns, fh, indent=2)
@@ -118,36 +63,21 @@ def pull_info():
     json.dump(issues, fh, indent=2)
 
 
-def create_md_table(issues, stream):
-    writer = MarkdownTableWriter()
-    writer.stream = stream
-    writer.headers = ['Issue', 'Title', 'Presenter', 'Status', 'Duration (mins)', 'Time']
-    writer.value_matrix = []
 
-    for issue in issues:
-        writer.value_matrix.append( [
-            "[#{mumber}]({html_url})".format(**issue),
-            issue['title'],
-            issue['assignee']['login'],
-            issue['version'],
-            next( label['name'].replace("dev:","") for label in issue['labels'] if label['name'].startswith("dev:")) ,
-        ] )
+@main.command()
+@click.option('--output', default='draft-agenda.md', help='output markdown')
+def agenda(output: Path):
+  """ Produces a markdown with an agenda for the review meeting
+  """
+  click.echo(f'agenda -> {output}')
+  # TODO: determine current items
+  #cs = Sprint(, )
+  #cm = Meeting()
 
-    writer.margin = 2  # add a whitespace for both sides of each cell
-    writer.write_table()
+  # rerder agenda
+
+  #render_markdown_doc(output_md, meeting=cm, sprint=cs, team=team)
 
 
-
-def main():
-  output_md = sys.argv[2]
-
-  #table = get_project_table()
-  #with open("table.json", 'wt') as fh:
-  #  json.dump(table, fh, indent=2)
-
-  #pull_info()
-
-
-
-if __name__ == "__main__":
+if __name__ == '__main__':
   main()

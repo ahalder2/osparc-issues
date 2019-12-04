@@ -17,8 +17,8 @@ devenv: scripts/requirements.txt .venv ## creates virtual env and install dev to
 	@.venv/bin/pip install -r $<
 
 
-review-draft.md: ## produces a review draft. Usage make token=1234 review-draft.md
-	@.venv/bin/python3 scripts/new-review.py $(token) $@
+draft-agenda.md: ## produces a review draft. Usage make token=1234 review-draft.md
+	@.venv/bin/python3 scripts/new-review.py --token=$(token) agenda --output=$@
 
 
 .PHONY: shell
