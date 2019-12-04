@@ -1,12 +1,13 @@
+from io import StringIO
 from pathlib import Path
+from typing import Dict
 
 from jinja2 import Environment, FileSystemLoader
 from pytablewriter import MarkdownTableWriter
-from typing import Dict
 
-from pathlib import Path
 
-def create_md_table(issues: Dict, stream):
+def create_md_table(issues: Dict) -> str:
+    stream = StringIO()
     writer = MarkdownTableWriter()
     writer.stream = stream
     writer.headers = ['Issue', 'Title', 'Presenter', 'Status', 'Duration (mins)', 'Time']
@@ -23,18 +24,19 @@ def create_md_table(issues: Dict, stream):
 
     writer.margin = 2  # add a whitespace for both sides of each cell
     writer.write_table()
+    return stream.getvalue()
 
 
-def render_markdown(output_path: Path, **kwargs):
-  env = Environment(loader=FileSystemLoader("."), autoescape=True)
-  template = env.get_template('templates/review.md.jinja2')
+def create_markdown(output_path: Path, **kwargs):
+    env = Environment(loader=FileSystemLoader("."), autoescape=True)
+    template = env.get_template('templates/review.md.jinja2')
 
-  with open(output_path) as fh:
-    print(template.render(**kwargs), fh)
+    with open(output_path) as fh:
+        print(template.render(**kwargs), fh)
 
 
 
 __all__ = [
-  'render_markdown',
+  'create_markdown',
   'create_md_table'
 ]
