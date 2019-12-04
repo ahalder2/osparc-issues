@@ -5,8 +5,8 @@ import click
 from pathlib import Path
 from yarl import URL
 
-from data_query import *
-from doc_render import *
+from helpers.data_query import *
+from helpers.doc_render import *
 
 
 @attr.s(auto_attribs=True)

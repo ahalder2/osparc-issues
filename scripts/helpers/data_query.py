@@ -1,13 +1,7 @@
 import json
-import sys
-from pprint import pprint
 from typing import Dict, List
 
-import attr
 import requests
-from yarl import URL
-
-
 
 MEMBERS = "odeimaiz OM ignapas IP mguidon MaG pcrespov PC KZzizzle KZ sanderegg SAN".split()
 
@@ -32,6 +26,7 @@ def dump_headers(token):
 def headers():
     with open('.header.json', 'wt') as fh:
       return json.load(fh)
+
 
 
 def get_issue(repo_name, issue_number) -> Dict:
