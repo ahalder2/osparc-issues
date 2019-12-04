@@ -3,8 +3,6 @@
 #
 .DEFAULT_GOAL := help
 
-token ?= unknown
-
 .venv:
 	# creating virtual environment $@
 	@python3 -m venv $@

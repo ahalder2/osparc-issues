@@ -1,9 +1,10 @@
 import json
+from pathlib import Path
 from typing import Dict, List
 
 import requests
 
-MEMBERS = "odeimaiz OM ignapas IP mguidon MaG pcrespov PC KZzizzle KZ sanderegg SAN".split()
+MEMBERS = "odeimaiz OM ignapas IP mguidon MaG pcrespov PC KZzizzle KZ sanderegg SAN Surfict ALL".split()
 
 ## https://developer.github.com/v3/projects/#list-organization-projects
 ORIGIN = "https://api.github.com"
@@ -15,18 +16,23 @@ OWNER = "ITISFoundation"
 PROJECT_ID = "1234240"
 
 
-def dump_headers(token):
+HEADER_CACHE = Path("~/.github-api-header.json").expanduser()
+
+def cache_headers(token: str):
     header = {
       'Authorization': f'token {token}',
       'Accept': 'application/vnd.github.inertia-preview+json'
     }
-    with open('.header.json', 'wt') as fh:
+    with open(HEADER_CACHE, 'wt') as fh:
         json.dump(header, fh)
 
-def headers():
-    with open('.header.json', 'wt') as fh:
-        return json.load(fh)
+def clear_cache():
+    if HEADER_CACHE.exists():
+        HEADER_CACHE.unlink()
 
+def headers() -> Dict:
+    with open(HEADER_CACHE, 'rt') as fh:
+        return json.load(fh)
 
 
 def get_issue(repo_name, issue_number) -> Dict:
@@ -52,14 +58,14 @@ def get_issues_in_column(column_id) -> List[Dict]:
     return issues
 
 
-def get_project_columns():
+def get_project_columns() -> Dict:
     # https://developer.github.com/v3/projects/columns/#list-project-columns
     url = f"{ORIGIN}/projects/{PROJECT_ID}/columns"
     res = requests.get(url, headers=headers())
     return res.json()
 
 
-def get_project_table():
+def get_project_table() -> Dict:
     # urls
     ## projects_url = f"{ORIGIN}/orgs/{OWNER}/projects"
 
@@ -83,6 +89,8 @@ def get_project_table():
 __all__ = [
     'MEMBERS',
     'get_issues_in_column',
-  'get_project_columns',
-
+    'get_project_columns',
+    'cache_headers',
+    'clear_cache',
+    'HEADER_CACHE'
 ]

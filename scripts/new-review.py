@@ -35,12 +35,13 @@ team = [ Member(name, short) for name, short in zip(MEMBERS[::2], MEMBERS[1::2])
 
 @click.group()
 @click.option('--token', default=None, help='github api token')
-def main(token):
-
-    # dumps
+def main(token=None):
     if token:
-        dump_headers(token)
-        click.echo('Token saved')
+        cache_headers(token)
+        click.echo('Token cached')
+
+    if HEADER_CACHE.exists():
+        click.echo(f'Cached token {HEADER_CACHE}')
 
 
 @main.command()
@@ -63,7 +64,6 @@ def pull_and_dump():
         json.dump(issues, fh, indent=2)
 
 
-
 @main.command()
 @click.option('--output', default='draft-agenda.md', help='output markdown')
 def agenda(output: Path):
@@ -77,6 +77,14 @@ def agenda(output: Path):
     # rerder agenda
 
     #render_markdown_doc(output_md, meeting=cm, sprint=cs, team=team)
+
+
+@main.command()
+def clean():
+    """ Cleans cache
+    """
+    click.echo("Cleaning cache ...")
+    clear_cache()
 
 
 if __name__ == '__main__':
