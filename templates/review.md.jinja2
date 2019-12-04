@@ -1,0 +1,27 @@
+# Review Meeting - {{ meeting.date }}@{{ meeting.time }}
+
+ - Sprint Name: [{{ sprint.name }}]({{ sprint.zenhub_url }})
+ - Scrum Master: [{{ sprint.scrum_master.short }}]
+ - osparc [Product Backlog](https://github.com/orgs/ITISFoundation/projects/3)
+ - osparc **master** deployment [online](https://osparc01.speag.com/)
+ - this document [online](https://git.speag.com/oSparc/documentation/blob/master/meetings/20191108_4Ecks_Review.md)
+
+## Agenda
+
+{{ meeting.agenda_table }}
+
+
+## NIH Deliverables
+
+{{ meeting.nih_deliverables_table }}
+
+
+<!--References
+  ORDERED ALPHABELICALY
+-->
+{% for member in team.members %}
+    [{{ member.short }}]:https://github.com/{{ member.name }}
+{% endfor %}
+
+
+[4Ecks]:https://app.zenhub.com/workspaces/osparc---scrum-wall-5c9260f3d76ef51f6b0fe78d/board?milestones=Fourecks%20or%20XXXX%232019-11-07&filterLogic=any&repos=118596920,174557929,151701223,135289610,118910047,181836792,167586968&showPRs=false&showClosed=false

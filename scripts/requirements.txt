@@ -1,0 +1,5 @@
+requests
+Pyyaml
+pytablewriter
+jinja2
+yarl
