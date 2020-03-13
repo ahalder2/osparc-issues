@@ -50,11 +50,12 @@ def get_issues_in_column(column_id) -> List[Dict]:
     ## https://developer.github.com/v3/projects/cards/#list-project-cards
     issues = []
     url = f"{ORIGIN}/projects/columns/{column_id}/cards"
+    hds = headers()
 
-    res = requests.get(url, headers=headers)
+    res = requests.get(url, headers=hds)
     cards = res.json()
     for card in cards:
-        res = requests.get(card["content_url"], headers=headers)
+        res = requests.get(card["content_url"], headers=hds)
         issue = res.json()
         issues.append(issue)
 
