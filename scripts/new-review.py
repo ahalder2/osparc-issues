@@ -63,14 +63,15 @@ def pull_and_dump():
     # finds cases in progress
     in_progress = next(c["id"] for c in columns if c["name"] == "Dev - In progress")
 
-    # find cases scheduled
-    scheduled = next(c["id"] for c in columns if c["name"] == "Scheduled")
-
-
+    # dump issues in progres
     issues = get_issues_in_column(in_progress)
     with open(".cache/in_progress.json", "wt") as fh:
         json.dump(issues, fh, indent=2)
 
+    # find cases scheduled
+    scheduled = next(c["id"] for c in columns if c["name"] == "Scheduled")
+
+    # dump issues scheduled
     issues = get_issues_in_column(scheduled)
     with open(".cache/scheduled.json", "wt") as fh:
         json.dump(issues, fh, indent=2)
