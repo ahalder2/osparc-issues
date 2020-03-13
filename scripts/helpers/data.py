@@ -18,20 +18,23 @@ PROJECT_ID = "1234240"
 
 HEADER_CACHE = Path("~/.github-api-header.json").expanduser()
 
+
 def cache_headers(token: str):
     header = {
-      'Authorization': f'token {token}',
-      'Accept': 'application/vnd.github.inertia-preview+json'
+        "Authorization": f"token {token}",
+        "Accept": "application/vnd.github.inertia-preview+json",
     }
-    with open(HEADER_CACHE, 'wt') as fh:
+    with open(HEADER_CACHE, "wt") as fh:
         json.dump(header, fh)
+
 
 def clear_cache():
     if HEADER_CACHE.exists():
         HEADER_CACHE.unlink()
 
+
 def headers() -> Dict:
-    with open(HEADER_CACHE, 'rt') as fh:
+    with open(HEADER_CACHE, "rt") as fh:
         return json.load(fh)
 
 
@@ -76,21 +79,19 @@ def get_project_table() -> Dict:
     table = {}
     res = requests.get(columns_url, headers=hds)
     for col in res.json():
-        table[col['name']] = []
-        res = requests.get(col['cards_url'], headers=hds)
+        table[col["name"]] = []
+        res = requests.get(col["cards_url"], headers=hds)
         for card in res.json():
-            table[col['name']].append(card)
+            table[col["name"]].append(card)
 
     return table
 
 
-
-
 __all__ = [
-    'MEMBERS',
-    'get_issues_in_column',
-    'get_project_columns',
-    'cache_headers',
-    'clear_cache',
-    'HEADER_CACHE'
+    "MEMBERS",
+    "get_issues_in_column",
+    "get_project_columns",
+    "cache_headers",
+    "clear_cache",
+    "HEADER_CACHE",
 ]
